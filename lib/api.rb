@@ -29,8 +29,9 @@ module Api
   end
 
   def format_options
-    { listeners: ["0.0.0.0:#{port}"],
-      timeout: 15.seconds }
+    { listeners:         ["0.0.0.0:#{port}"],
+      worker_processes:  4,
+      timeout:           15.seconds }
   end
 
 end

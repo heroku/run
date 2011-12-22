@@ -29,8 +29,9 @@ module Feed
   end
 
   def format_options
-    { listeners: ["0.0.0.0:#{port}"],
-      timeout: 4.hours }
+    { listeners:         ["0.0.0.0:#{port}"],
+      worker_processes:  4,
+      timeout:           4.hours }
   end
 
 end
