@@ -2,7 +2,7 @@ require "clockwork"
 require "monkey_patch"
 
 require "run/log"
-require "run/work/redis_helper"
+require "run/redis_helper"
 
 include Clockwork
 
@@ -22,7 +22,7 @@ module Clock
     timers.each do |interval, timer|
       every(interval, timer) do
         begin
-          Run::Work::RedisHelper.publish("ps.timers", timer: timer)
+          Run::RedisHelper.publish("ps.timers", timer: timer)
         rescue => e
           error e
         end

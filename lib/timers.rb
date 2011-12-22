@@ -1,7 +1,7 @@
 require "monkey_patch"
 
 require "run/log"
-require "run/work/redis_helper"
+require "run/redis_helper"
 
 module Timers
   extend self, Run::Log
@@ -37,7 +37,7 @@ module Timers
   end
 
   def main
-    Run::Work::RedisHelper.subscribe("ps.timers") do |msg|
+    Run::RedisHelper.subscribe("ps.timers") do |msg|
       method(msg['timer']).call
     end
   end
