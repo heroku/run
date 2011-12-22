@@ -11,12 +11,12 @@ module Run
 
     def publish(topic, data)
       header = format_header
-      info(header, data, topic: topic) do
+      info header, data, topic: topic do
         Timeout.timeout(3) do
           conns.shuffle.each do |conn|
             begin
               conn.rpush(topic, JSON.dump(header: header, payload: data))
-              info(header, data, topic: topic, event: "published")
+              info header, data, topic: topic, event: "published"
               break
             rescue => e
               error e
@@ -32,14 +32,14 @@ module Run
         _, msg = zone_conn.blpop(topic, 0)
         start = Time.now
         data = JSON.parse(msg)
-        info(data['header'], data['payload'], topic: topic) do
+        info data['header'], data['payload'], topic: topic do
           begin
             if data['header']['published_on'].delay > data['header']['ttl'].to_i
-              info(data['header'], data['payload'], topic: topic, event: "timeout")
+              info data['header'], data['payload'], topic: topic, event: "timeout"
             else
-              info(data['header'], data['payload'], topic: topic, event: "received")
+              info data['header'], data['payload'], topic: topic, event: "received"
               yield data['payload']
-              info(data['header'], data['payload'], topic: topic, event: "processed")
+              info data['header'], data['payload'], topic: topic, event: "processed"
             end
           rescue => e
             error e
@@ -48,7 +48,7 @@ module Run
         idle = start - finish
         finish = Time.now
         elapsed = finish - start
-        info(data['header'], data['payload'], topic: topic, idle: idle, elapsed: elapsed)
+        info data['header'], data['payload'], topic: topic, idle: idle, elapsed: elapsed
       end
     end
 

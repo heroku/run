@@ -2,6 +2,10 @@ module Run
   module Config
     extend self
 
+    def port
+      @port ||= env("PORT")
+    end
+
     def runtime_redis_urls
       @runtime_redis_urls ||= env!("RUNTIME_REDIS_URLS")
     end
