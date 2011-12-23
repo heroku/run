@@ -8,10 +8,13 @@ require "run/feed"
 module Feed
   extend self, Run::Log
 
+  def server
+    @server ||= Unicorn::HttpServer.new(Run::Feed, options)
+  end
+
   def main
-    options = format_options
-    info options
-    Unicorn::HttpServer.new(Run::Feed, options).start.join
+    info port: port
+    server.start.join
   end
 
   def run
@@ -28,9 +31,10 @@ module Feed
     @port ||= Run::Config.port || 9090
   end
 
-  def format_options
+  def options
     { listeners:         ["0.0.0.0:#{port}"],
       worker_processes:  4,
+      preload_app:       true,
       timeout:           4.hours }
   end
 

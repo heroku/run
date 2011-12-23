@@ -6,6 +6,10 @@ module Run
       @port ||= env("PORT")
     end
 
+    def psmgr_database_url
+      @psmgr_database_url ||= env!("PSMGR_DATABASE_URL")
+    end
+
     def runtime_redis_urls
       @runtime_redis_urls ||= env!("RUNTIME_REDIS_URLS")
     end

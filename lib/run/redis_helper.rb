@@ -54,7 +54,7 @@ module Run
 
     private
 
-    def new(url)
+    def connect(url)
       Redis.connect(url: url, timeout: 1)
     end
 
@@ -63,7 +63,7 @@ module Run
     end
 
     def conns
-      @conns ||= urls.map(&method(:new))
+      @conns ||= urls.map(&method(:connect))
     end
 
     def zone_url
@@ -71,7 +71,7 @@ module Run
     end
 
     def zone_conn
-      @zone_conn ||= new(zone_url)
+      @zone_conn ||= connect(zone_url)
     end
 
     def format_header

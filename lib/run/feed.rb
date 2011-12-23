@@ -1,11 +1,10 @@
-require "rack"
 require "sinatra"
 require "json"
 
 module Run
   class Feed < Sinatra::Base
 
-    get '/' do
+    get "/" do
       status 202
       headers "Content-Type" => "application/json", "Transfer-Encoding" => "chunked"
       stream do |out|
@@ -15,6 +14,9 @@ module Run
           sleep 1
         end
       end
+    end
+
+    get "/health" do
     end
 
   end

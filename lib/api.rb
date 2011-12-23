@@ -8,10 +8,13 @@ require "run/api"
 module Api
   extend self, Run::Log
 
+  def server
+    @server ||= Unicorn::HttpServer.new(Run::Api, options)
+  end
+
   def main
-    options = format_options
-    info options
-    Unicorn::HttpServer.new(Run::Api, options).start.join
+    info port: port
+    server.start.join
   end
 
   def run
@@ -31,6 +34,7 @@ module Api
   def format_options
     { listeners:         ["0.0.0.0:#{port}"],
       worker_processes:  4,
+      preload_app:       true,
       timeout:           15.seconds }
   end
 

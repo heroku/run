@@ -2,6 +2,7 @@ require "clockwork"
 require "monkey_patch"
 
 require "run/log"
+require "run/data_helper"
 require "run/redis_helper"
 
 include Clockwork
@@ -32,7 +33,9 @@ module Clock
 
   def main
     loop do
-      Clockwork.tick
+      id = Time.now.to_i / 1.day.to_i
+      Clockwork.tick if clock = Run::DataHelper.lock(id)
+      info clock: clock, id: id
       sleep(1)
     end
   end

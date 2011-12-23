@@ -17,8 +17,9 @@ module Run
     end
 
     def error(e)
+      message = format_message(e.message)
       trace = format_trace(e.backtrace)
-      $stdout.puts "class=#{e.class} message=`#{e.message}' trace=#{trace[0, trace.size-4]}"
+      $stdout.puts "class=#{e.class} message=`#{message}' trace=#{trace[0, trace.size-4]}"
     end
 
     private
@@ -47,6 +48,10 @@ module Run
           i.to_s
         end
       end.join(" ")
+    end
+
+    def format_message(message)
+      message.lines.to_a.first.strip
     end
 
     def format_trace(trace)
