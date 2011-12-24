@@ -10,17 +10,15 @@ module Run
     extend self, Log
 
     def publish(topic, data)
-      header = format_header
+      header = to_header
       info header, data, topic: topic do
-        Timeout.timeout(3) do
-          conns.shuffle.each do |conn|
-            begin
-              conn.rpush(topic, JSON.dump(header: header, payload: data))
-              info header, data, topic: topic, event: "published"
-              break
-            rescue => e
-              error e
-            end
+        conns.shuffle.each do |conn|
+          begin
+            conn.rpush(topic, JSON.dump(header: header, payload: data))
+            info header, data, topic: topic, event: "published"
+            break
+          rescue => e
+            error e
           end
         end
       end
@@ -31,15 +29,17 @@ module Run
       loop do
         _, msg = zone_conn.blpop(topic, 0)
         start = Time.now
-        data = JSON.parse(msg)
-        info data['header'], data['payload'], topic: topic do
+        payload = JSON.parse(msg)
+        header, data = payload['header'], payload['payload']
+        published_on, ttl = header['published_on'], header['ttl']
+        info header, data, topic: topic do
           begin
-            if data['header']['published_on'].delay > data['header']['ttl'].to_i
-              info data['header'], data['payload'], topic: topic, event: "timeout"
+            if published_on.delay > ttl.to_i
+              info header, data, topic: topic, event: "timeout"
             else
-              info data['header'], data['payload'], topic: topic, event: "received"
-              yield data['payload']
-              info data['header'], data['payload'], topic: topic, event: "processed"
+              info header, data, topic: topic, event: "received"
+              yield data
+              info header, data, topic: topic, event: "processed"
             end
           rescue => e
             error e
@@ -48,7 +48,7 @@ module Run
         idle = start - finish
         finish = Time.now
         elapsed = finish - start
-        info data['header'], data['payload'], topic: topic, idle: idle, elapsed: elapsed
+        info header, data, topic: topic, idle: idle, elapsed: elapsed
       end
     end
 
@@ -74,7 +74,7 @@ module Run
       @zone_conn ||= connect(zone_url)
     end
 
-    def format_header
+    def to_header
       { message_id:    UUIDTools::UUID.random_create.to_s,
         published_on:  Time.now.to_i.to_s,
         ttl:           30.to_s }

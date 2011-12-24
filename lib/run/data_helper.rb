@@ -5,9 +5,7 @@ module Run
     extend self, Log
 
     def lock(id)
-      Timeout.timeout(3) do
-        conn["SELECT pg_try_advisory_lock(#{id})"].get
-      end
+      conn["SELECT pg_try_advisory_lock(#{id})"].get
     end
 
     private

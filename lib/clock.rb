@@ -1,6 +1,7 @@
 require "clockwork"
 require "monkey_patch"
 
+require "run/task"
 require "run/log"
 require "run/data_helper"
 require "run/redis_helper"
@@ -8,9 +9,11 @@ require "run/redis_helper"
 include Clockwork
 
 module Clock
-  extend self, Run::Log
+  extend self, Run::Task, Run::Log
 
-  def timers
+  private
+
+  def to_timers
     [[15.seconds,  "converge"],
      [30.seconds,  "converge_crashed"],
      [1.minutes,   "converge_created"],
@@ -20,10 +23,12 @@ module Clock
   end
 
   def setup
-    timers.each do |interval, timer|
+    to_timers.each do |interval, timer|
       every(interval, timer) do
         begin
-          Run::RedisHelper.publish("ps.timers", timer: timer)
+          Timeout.timeout(3) do
+            Run::RedisHelper.publish("ps.timers", timer: timer)
+          end
         rescue => e
           error e
         end
@@ -31,22 +36,19 @@ module Clock
     end
   end
 
-  def main
-    loop do
-      id = Time.now.to_i / 1.day.to_i
-      Clockwork.tick if clock = Run::DataHelper.lock(id)
-      info clock: clock, id: id
-      sleep(1)
+  def clock?
+    id = Time.now.to_i / 1.day.to_i
+    Timeout.timeout(3) do
+      Run::DataHelper.lock(id)
     end
   end
 
-  def run
-    setup
-    main
-    exit 0
-  rescue => e
-    error e
-    exit 1
+  def main
+    loop do
+      Clockwork.tick if clock = clock?
+      info clock: clock
+      sleep(1)
+    end
   end
 
 end

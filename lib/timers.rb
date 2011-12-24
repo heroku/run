@@ -1,10 +1,11 @@
 require "monkey_patch"
 
+require "run/task"
 require "run/log"
 require "run/redis_helper"
 
 module Timers
-  extend self, Run::Log
+  extend self, Run::Task, Run::Log
 
   def converge
     info do
@@ -36,18 +37,12 @@ module Timers
     end
   end
 
+  private
+
   def main
     Run::RedisHelper.subscribe("ps.timers") do |msg|
       method(msg['timer']).call
     end
-  end
-
-  def run
-    main
-    exit 0
-  rescue => e
-    error e
-    exit 1
   end
 
 end

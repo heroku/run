@@ -3,7 +3,7 @@ module Run
     extend self
 
     def info(*data, &blk)
-      data = format_data(data)
+      data = to_data(data)
       message = "file=#{file} fun=#{fun} #{data}"
       if not blk
         $stdout.puts message
@@ -17,8 +17,8 @@ module Run
     end
 
     def error(e)
-      message = format_message(e.message)
-      trace = format_trace(e.backtrace)
+      message = to_message(e.message)
+      trace = to_trace(e.backtrace)
       $stdout.puts "class=#{e.class} message=`#{message}' trace=#{trace[0, trace.size-4]}"
     end
 
@@ -32,7 +32,7 @@ module Run
       caller[1].match(/#{Dir.getwd}\/lib\/([^\.]*)/) && $1.strip
     end
 
-    def format_data(data)
+    def to_data(data)
       data.map do |i|
         case i
         when Hash
@@ -50,11 +50,11 @@ module Run
       end.join(" ")
     end
 
-    def format_message(message)
+    def to_message(message)
       message.lines.to_a.first.strip
     end
 
-    def format_trace(trace)
+    def to_trace(trace)
       trace.map do |i|
         i.match(/(#{Gem.dir}|#{Dir.getwd})\/(.*)/) && $2.strip
       end
