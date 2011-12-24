@@ -4,7 +4,7 @@ module Run
 
     def info(*data, &blk)
       data = to_data(data)
-      message = "file=#{file} fun=#{fun} #{data}"
+      message = "file=#{to_file} fun=#{to_fun} #{data}"
       if not blk
         $stdout.puts message
       else
@@ -24,11 +24,11 @@ module Run
 
     private
 
-    def fun
+    def to_fun
       caller[2].match(/([^` ]*)'/) && $1.strip
     end
 
-    def file
+    def to_file
       caller[1].match(/#{Dir.getwd}\/lib\/([^\.]*)/) && $1.strip
     end
 

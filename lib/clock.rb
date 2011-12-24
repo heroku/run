@@ -1,4 +1,5 @@
 require "clockwork"
+require "timeout"
 require "monkey_patch"
 
 require "run/task"
@@ -11,15 +12,10 @@ include Clockwork
 module Clock
   extend self, Run::Task, Run::Log
 
-  private
-
-  def to_timers
-    [[15.seconds,  "converge"],
-     [30.seconds,  "converge_crashed"],
-     [1.minutes,   "converge_created"],
-     [30.seconds,  "converge_abandoned"],
-     [20.seconds,  "counts"],
-     [1.minutes,   "garbage_collect"]]
+  def init
+    Timeout.timeout(3) do
+      Run::DataHelper.conn.test_connection
+    end
   end
 
   def setup
@@ -49,6 +45,17 @@ module Clock
       info clock: clock
       sleep(1)
     end
+  end
+
+  private
+
+  def to_timers
+    [[15.seconds,  "converge"],
+     [30.seconds,  "converge_crashed"],
+     [1.minutes,   "converge_created"],
+     [30.seconds,  "converge_abandoned"],
+     [20.seconds,  "counts"],
+     [1.minutes,   "garbage_collect"]]
   end
 
 end

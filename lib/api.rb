@@ -1,25 +1,27 @@
 require "monkey_patch"
+require "timeout"
 require "unicorn"
 
 require "run/task"
 require "run/log"
 require "run/config"
 require "run/api"
+require "run/data_helper"
+
+autoload :Logical,   "run/logical"
+autoload :Physical,  "run/physical"
 
 module Api
   extend self, Run::Task, Run::Log
 
-  private
+  def init
+    Timeout.timeout(3) do
+      Run::DataHelper.conn.test_connection
+    end
+  end
 
   def port
     @port ||= Run::Config.port || 8080
-  end
-
-  def to_options
-    { listeners:         ["0.0.0.0:#{port}"],
-      worker_processes:  4,
-      preload_app:       true,
-      timeout:           15.seconds }
   end
 
   def server
@@ -29,6 +31,15 @@ module Api
   def main
     info port: port
     server.start.join
+  end
+
+  private
+
+  def to_options
+    { listeners:         ["0.0.0.0:#{port}"],
+      worker_processes:  4,
+      preload_app:       true,
+      timeout:           15.seconds }
   end
 
 end

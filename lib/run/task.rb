@@ -5,9 +5,9 @@ module Run
     extend self, Run::Log
 
     def run
+      init
       setup if defined? setup
       main
-      teardown if defined? teardown
       exit 0
     rescue => e
       error e

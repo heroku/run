@@ -1,8 +1,13 @@
 require "monkey_patch"
+require "timeout"
 
 require "run/task"
 require "run/log"
+require "run/data_helper"
 require "run/redis_helper"
+
+autoload :Logical,   "run/logical"
+autoload :Physical,  "run/physical"
 
 module Timers
   extend self, Run::Task, Run::Log
@@ -37,7 +42,12 @@ module Timers
     end
   end
 
-  private
+  def init
+    Timeout.timeout(3) do
+      Run::DataHelper.conn.test_connection
+      Run::RedisHelper.zone_conn.ping
+    end
+  end
 
   def main
     Run::RedisHelper.subscribe("ps.timers") do |msg|

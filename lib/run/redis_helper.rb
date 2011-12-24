@@ -9,6 +9,26 @@ module Run
   module RedisHelper
     extend self, Log
 
+    def connect(url)
+      Redis.connect(url: url, timeout: 1)
+    end
+
+    def urls
+      @urls ||= Config.runtime_redis_urls.split(",")
+    end
+
+    def conns
+      @conns ||= urls.map(&method(:connect))
+    end
+
+    def zone_url
+      @zone_url ||= urls[Config.runtime_redis_zone.ord % urls.size]
+    end
+
+    def zone_conn
+      @zone_conn ||= connect(zone_url)
+    end
+
     def publish(topic, data)
       header = to_header
       info header, data, topic: topic do
@@ -53,26 +73,6 @@ module Run
     end
 
     private
-
-    def connect(url)
-      Redis.connect(url: url, timeout: 1)
-    end
-
-    def urls
-      @urls ||= Config.runtime_redis_urls.split(",")
-    end
-
-    def conns
-      @conns ||= urls.map(&method(:connect))
-    end
-
-    def zone_url
-      @zone_url ||= urls[Config.runtime_redis_zone.ord % urls.size]
-    end
-
-    def zone_conn
-      @zone_conn ||= connect(zone_url)
-    end
 
     def to_header
       { message_id:    UUIDTools::UUID.random_create.to_s,
