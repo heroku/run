@@ -40,6 +40,8 @@ module Run
             case v
             when Hash
               "#{k}=#"
+            when NilClass
+              "#{k}=nil"
             else
               "#{k}=#{v.to_s}"
               end
