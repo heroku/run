@@ -38,7 +38,6 @@ module Api
   def to_options
     { listeners:         ["0.0.0.0:#{port}"],
       worker_processes:  4,
-      preload_app:       true,
       timeout:           15.seconds }
   end
 
