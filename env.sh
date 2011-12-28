@@ -1,2 +1,0 @@
-export RUNTIME_REDIS_URLS=redis://127.0.0.1:6379/,redis://127.0.0.1:6378/,redis://127.0.0.1:6377/
-export PSMGR_DATABASE_URL=postgres://localhost/psmgr-development
