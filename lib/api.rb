@@ -8,9 +8,6 @@ require "run/config"
 require "run/api"
 require "run/data_helper"
 
-autoload :Logical,   "run/logical"
-autoload :Physical,  "run/physical"
-
 module Api
   extend self, Run::Task, Run::Log
 

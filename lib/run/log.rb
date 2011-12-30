@@ -4,7 +4,7 @@ module Run
 
     def info(*data, &blk)
       data = to_data(data)
-      message = "file=#{to_file} fun=#{to_fun} #{data}"
+      message = "file=#{to_file} fun=#{to_fun} #{data}".strip
       if not blk
         $stdout.puts message
       else
@@ -25,7 +25,7 @@ module Run
     private
 
     def to_fun
-      caller[2].match(/([^` ]*)'/) && $1.strip
+      caller[1].match(/([^` ]*)'/) && $1.strip
     end
 
     def to_file
