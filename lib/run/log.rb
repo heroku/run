@@ -6,12 +6,12 @@ module Run
       data = to_data(data)
       message = "file=#{to_file} fun=#{to_fun} #{data}".strip
       if not blk
-        $stdout.puts message
+        $stdout.puts message[0,950]
       else
         start = Time.now
-        $stdout.puts "#{message} block=begin"
+        $stdout.puts "#{message} block=begin"[0,950]
         result = yield
-        $stdout.puts "#{message} block=finish elapsed=#{Time.now - start}"
+        $stdout.puts "#{message} block=finish elapsed=#{Time.now - start}"[0,950]
         result
       end
     end
@@ -19,7 +19,7 @@ module Run
     def exception(e)
       message = to_message(e.message)
       trace = to_trace(e.backtrace)
-      $stdout.puts "class=#{e.class} message=`#{message}' trace=#{trace[0, trace.size-4]}"
+      $stdout.puts "class=#{e.class} message=`#{message}' trace=#{trace[0, trace.size-4]}"[0,950]
     end
 
     private
@@ -45,11 +45,11 @@ module Run
             else
               "#{k}=#{v.to_s}"
               end
-          end.join(" ")
+          end.compact.join(" ")
         else
           i.to_s
         end
-      end.join(" ")
+      end.compact.join(" ")
     end
 
     def to_message(message)
@@ -59,7 +59,7 @@ module Run
     def to_trace(trace)
       trace.map do |i|
         i.match(/(#{Gem.dir}|#{Dir.getwd})\/(.*)/) && $2.strip
-      end
+      end.compact
     end
 
   end

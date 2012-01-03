@@ -8,7 +8,7 @@ module Run
   class Api < Sinatra::Base
     include Log
 
-    disable :show_exceptions, :dump_errors
+    disable :show_exceptions, :dump_errors, :logging
 
     helpers do
       def data
