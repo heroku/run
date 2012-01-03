@@ -10,7 +10,7 @@ module Run
       main
       exit 0
     rescue => e
-      error e
+      exception e
       exit 1
     end
 

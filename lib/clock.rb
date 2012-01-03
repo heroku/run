@@ -26,7 +26,7 @@ module Clock
             Run::RedisHelper.publish("ps.timers", timer: timer)
           end
         rescue => e
-          error e
+          exception e
         end
       end
     end
@@ -42,7 +42,7 @@ module Clock
   def main
     loop do
       Clockwork.tick if clock = clock?
-      info clock: clock
+      notice clock: clock
       sleep(1)
     end
   end

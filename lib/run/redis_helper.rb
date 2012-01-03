@@ -31,14 +31,14 @@ module Run
 
     def publish(topic, data)
       header = to_header
-      info header, topic: topic do
+      notice header, topic: topic do
         conns.shuffle.each do |conn|
           begin
             conn.rpush(topic, JSON.dump(header: header, payload: data))
-            info header, topic: topic, event: "published"
+            notice header, topic: topic, event: "published"
             break
           rescue => e
-            error e
+            exception e
           end
         end
       end
@@ -52,23 +52,23 @@ module Run
         payload = JSON.parse(msg)
         header, data = payload['header'], payload['payload']
         published_on, ttl = header['published_on'], header['ttl']
-        info header, topic: topic do
+        notice header, topic: topic do
           begin
             if published_on.delay > ttl.to_i
-              info header, topic: topic, event: "timeout"
+              notice header, topic: topic, event: "timeout"
             else
-              info header, topic: topic, event: "received"
+              notice header, topic: topic, event: "received"
               yield data
-              info header, topic: topic, event: "processed"
+              notice header, topic: topic, event: "processed"
             end
           rescue => e
-            error e
+            exception e
           end
         end
         idle = start - finish
         finish = Time.now
         elapsed = finish - start
-        info header, topic: topic, idle: idle, elapsed: elapsed
+        notice header, topic: topic, idle: idle, elapsed: elapsed
       end
     end
 

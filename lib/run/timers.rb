@@ -17,32 +17,32 @@ module Run
     end
 
     def converge
-      info do
+      notice do
       end
     end
 
     def converge_created
-      info do
+      notice do
       end
     end
 
     def converge_crashed
-      info do
+      notice do
       end
     end
 
     def converge_abandoned
-      info do
+      notice do
       end
     end
 
     def counts
-      info do
+      notice do
       end
     end
 
     def garbage_collect
-      info do
+      notice do
       end
     end
 

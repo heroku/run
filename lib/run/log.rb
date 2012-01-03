@@ -2,7 +2,7 @@ module Run
   module Log
     extend self
 
-    def info(*data, &blk)
+    def notice(*data, &blk)
       data = to_data(data)
       message = "file=#{to_file} fun=#{to_fun} #{data}".strip
       if not blk
@@ -16,7 +16,7 @@ module Run
       end
     end
 
-    def error(e)
+    def exception(e)
       message = to_message(e.message)
       trace = to_trace(e.backtrace)
       $stdout.puts "class=#{e.class} message=`#{message}' trace=#{trace[0, trace.size-4]}"

@@ -26,7 +26,7 @@ module Feed
   end
 
   def main
-    info port: port
+    notice port: port
     server.start.join
   end
 
