@@ -19,7 +19,8 @@ module Timers
 
   def main
     Run::RedisHelper.subscribe("ps.timers") do |msg|
-      Run::Timers.method(msg['timer']).call
+      route = Run::Timers.routes[msg['timer']]
+      Run::Timers.method(route).call if route
     end
   end
 

@@ -7,6 +7,15 @@ module Run
   module Timers
     extend self, Log
 
+    def routes
+      ["converge"            => "converge",
+       "converge.created"    => "converge_created",
+       "converge.crashed"    => "converge_crashed",
+       "converge.abandoned"  => "converge_abandoned",
+       "counts"              => "counts",
+       "garbage.collect"     => "garbage_collect"]
+    end
+
     def converge
       info do
       end

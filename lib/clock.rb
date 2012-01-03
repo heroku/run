@@ -51,11 +51,11 @@ module Clock
 
   def to_timers
     [[15.seconds,  "converge"],
-     [30.seconds,  "converge_crashed"],
-     [1.minutes,   "converge_created"],
-     [30.seconds,  "converge_abandoned"],
+     [30.seconds,  "converge.crashed"],
+     [1.minutes,   "converge.created"],
+     [30.seconds,  "converge.abandoned"],
      [20.seconds,  "counts"],
-     [1.minutes,   "garbage_collect"]]
+     [1.minutes,   "garbage.collect"]]
   end
 
 end
