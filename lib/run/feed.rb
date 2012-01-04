@@ -1,22 +1,34 @@
-require "sinatra"
-require "json"
+require "run/config"
+require "run/log"
+require "run/v0/feed"
+require "run/web"
 
 module Run
-  class Feed < Sinatra::Base
+  class Feed < Web
+    include Log
 
-    get "/" do
-      status 202
-      headers "Content-Type" => "application/json", "Transfer-Encoding" => "chunked"
-      stream do |out|
-        loop do
-          data = JSON.dump(yo: "dog")
-          out << "#{data.size.to_s(16)}\r\n#{data}\r\n"
-          sleep 1
-        end
+    helpers do
+      def credentials
+        @credentials ||= [Config.psmgr_url_user, Config.psmgr_alt_url_user].compact
+      end
+
+      def chunk(s)
+        "#{s.size.to_s(16)}\r\n#{s}\r\n"
       end
     end
 
-    get "/health" do
+    V0::Feed.routes.each do |route, name|
+      post "/v0/#{route}" do
+        authorized!
+        status 202
+        headers "Content-Type" => "application/json", "Transfer-Encoding" => "chunked"
+        stream do |out|
+          V0::Feed.method(name).call(data) do |entry|
+            out << chunk("#{JSON.dump(entry)}\r\n")
+          end
+          out << chunk("")
+        end
+      end
     end
 
   end
