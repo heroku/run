@@ -1,3 +1,5 @@
+require "json"
+
 require "run/log"
 
 module Run
@@ -6,13 +8,24 @@ module Run
       extend self, Log
 
       def routes
-        [["hermes", "hermes"]]
+        [["hermes",  "hermes"],
+         ["apollo",  "apollo"]]
       end
 
       def hermes(data, &blk)
         loop do
           entry = {yo: "dog"}
-          yield entry
+          yield JSON.dump(entry)
+          yield ""
+          sleep 1
+        end
+      end
+
+      def apollo(data, &blk)
+        loop do
+          entry = {dog: "yo"}
+          yield JSON.dump(entry)
+          yield ""
           sleep 1
         end
       end

@@ -24,7 +24,7 @@ module Run
         headers "Content-Type" => "application/json", "Transfer-Encoding" => "chunked"
         stream do |out|
           V0::Feed.method(name).call(data) do |entry|
-            out << chunk("#{JSON.dump(entry)}\r\n")
+            out << chunk("#{entry}\r\n")
           end
           out << chunk("")
         end
